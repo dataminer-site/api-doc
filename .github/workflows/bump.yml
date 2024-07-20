@@ -35,3 +35,10 @@ jobs:
             --doc "dataminersite" \
             --token "${{ secrets.BUMP_TOKEN }}" \
             doc/openapi.yaml
+
+      - name: deploy yaml files
+        run: |
+          bump deploy \
+            --doc "dataminersite" \
+            --token "${{ secrets.BUMP_TOKEN }}" \
+            doc/openapi.yaml
