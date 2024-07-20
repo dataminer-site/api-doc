@@ -1071,7 +1071,7 @@ info:
     API Documentation     
      NOTE: The API with (LOCK) symbol can be used only after providing Login API response token in (Authorize)     
      -Parameter with * are required to execute related API
-  version: backend-v1.1.1
+  version: v1.2.0
   contact: {}
 tags: []
 servers:
@@ -1309,12 +1309,9 @@ components:
           type: string
           description: Description for the plugin
         should_test:
-          type: string
+          type: boolean
           description: Flag for the testing the plugin
-          enum:
-            - 'true'
-            - 'false'
-          default: 'false'
+          default: false
         allowed_hostnames:
           type: array
           description: Hostnames for plugin
@@ -1345,12 +1342,9 @@ components:
           type: string
           description: Additional comments regarding your plugin
         should_test:
-          type: string
+          type: boolean
           description: Flag for the testing the plugin
-          enum:
-            - 'true'
-            - 'false'
-          default: 'false'
+          default: false
         allowed_hostnames:
           type: array
           items:
@@ -1361,6 +1355,8 @@ components:
         test_data:
           type: string
           format: binary
+      required:
+        - should_test
     APIKeyResDto:
       type: object
       properties:
