@@ -2,13 +2,14 @@ name: Update swagger
 
 on:
     workflow_dispatch:
+    workflow_call:
     schedule:
         - cron: "0 * * * *"
 
 jobs:
-  deploy-doc:
+  pull-doc:
     environment: prod
-    name: Deploy API documentation on Bump.sh
+    name: pull api url from docker
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -25,3 +26,22 @@ jobs:
 
       - name: commit the doc
         uses: stefanzweifel/git-auto-commit-action@v5
+
+
+  bump_io_deploy:
+    environment: prod
+    name: deploy api doc to prod
+    needs: pull-doc
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+      issues: write
+
+    steps:
+      - name: run remote bump
+        uses: dataminer-site/api-doc/.github/workflows/bump.yml@main
+
+
+        
