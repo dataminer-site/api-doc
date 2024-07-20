@@ -32,5 +32,5 @@ jobs:
       - name: validate open api
         run: bump deploy --dry-run \
             --doc "dataminersite" \
-            --token ${{ secrets.BUMP_TOKEN }} \
-            your/openapi-file.yml
+            --token "${{ secrets.BUMP_TOKEN }}" \
+            doc/openapi.yaml
