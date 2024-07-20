@@ -15,35 +15,22 @@ on:
 jobs:
   deploy-doc:
     environment: prod
-    if: ${{ github.event_name == 'push' }}
     name: Deploy API documentation on Bump.sh
     runs-on: ubuntu-latest
     steps:
-      - name: get token
-        run: echo ${{ secrets.BUMP_TOKEN }}
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Deploy API documentation
-        uses: bump-sh/github-action@v1.1.11
-        with:
-          doc: dataminer
-          token: ${{ secrets.BUMP_TOKEN }}
-          file: doc/openapi.yaml
-  api-diff:
-    environment: prod
-    if: ${{ github.event_name == 'pull_request' }}
-    name: Check API diff on Bump.sh
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Comment pull request with API diff
-        uses: bump-sh/github-action@v1
-        with:
-          doc: dataminer
-          token: ${{ secrets.BUMP_TOKEN }}
-          file: doc/openapi.yaml
-          command: diff
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
+      - name: install node
+        uses: actions/setup-node@v4.0.3
+        with:
+          node-version-file: '.nvmrc'
+      
+      - name: install bump
+        run: npm install -g bump-cli
+
+      - name: validate open api
+        run: bump deploy --dry-run \
+            --doc "dataminersite" \
+            --token ${{ secrets.BUMP_TOKEN }} \
+            your/openapi-file.yml
