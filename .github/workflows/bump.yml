@@ -30,7 +30,8 @@ jobs:
         run: npm install -g bump-cli
 
       - name: validate open api
-        run: bump deploy --dry-run \
+        run: |
+         bump deploy --dry-run \
             --doc "dataminersite" \
             --token "${{ secrets.BUMP_TOKEN }}" \
             doc/openapi.yaml
