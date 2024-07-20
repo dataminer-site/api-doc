@@ -14,6 +14,7 @@ on:
       - master
 jobs:
   deploy-doc:
+    environment: prod
     if: ${{ github.event_name == 'push' }}
     name: Deploy API documentation on Bump.sh
     runs-on: ubuntu-latest
@@ -27,6 +28,7 @@ jobs:
           token: ${{ secrets.BUMP_TOKEN }}
           file: doc/openapi.yaml
   api-diff:
+    environment: prod
     if: ${{ github.event_name == 'pull_request' }}
     name: Check API diff on Bump.sh
     runs-on: ubuntu-latest
