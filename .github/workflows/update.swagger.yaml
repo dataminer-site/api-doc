@@ -38,10 +38,8 @@ jobs:
       packages: write
       id-token: write
       issues: write
-
     steps:
-      - name: run remote bump
-        uses: dataminer-site/api-doc/.github/workflows/bump.yml@main
-
-
-        
+      - name: Checkout
+        uses: benc-uk/workflow-dispatch@v1.2.3
+        with:
+          workflow: bump.yml
