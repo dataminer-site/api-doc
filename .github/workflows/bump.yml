@@ -25,7 +25,7 @@ jobs:
         uses: bump-sh/github-action@v1.1.11
         with:
           doc: dataminer
-          token: ${{ secrets.BUMP_TOKEN }}
+          token: ${{ vars.BUMP_TOKEN }}
           file: doc/openapi.yaml
   api-diff:
     environment: prod
@@ -39,7 +39,7 @@ jobs:
         uses: bump-sh/github-action@v1.1.11
         with:
           doc: dataminer
-          token: ${{ secrets.BUMP_TOKEN }}
+          token: ${{ vars.BUMP_TOKEN }}
           file: doc/openapi.yaml
           command: diff
         env:
