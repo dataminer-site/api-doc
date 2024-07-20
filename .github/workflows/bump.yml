@@ -20,14 +20,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: get token
-        run: echo ${{ vars.BUMP_TOKEN }}
+        run: echo ${{ secrets.BUMP_TOKEN }}
       - name: Checkout
         uses: actions/checkout@v3
       - name: Deploy API documentation
         uses: bump-sh/github-action@v1.1.11
         with:
           doc: dataminer
-          token: ${{ vars.BUMP_TOKEN }}
+          token: ${{ secrets.BUMP_TOKEN }}
           file: doc/openapi.yaml
   api-diff:
     environment: prod
@@ -41,7 +41,7 @@ jobs:
         uses: bump-sh/github-action@v1
         with:
           doc: dataminer
-          token: ${{ vars.BUMP_TOKEN }}
+          token: ${{ secrets.BUMP_TOKEN }}
           file: doc/openapi.yaml
           command: diff
         env:

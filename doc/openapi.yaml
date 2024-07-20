@@ -870,6 +870,194 @@ paths:
                 $ref: '#/components/schemas/ExceptionDto'
       tags:
         - Callback module
+  /api/v1/profile:
+    get:
+      operationId: ProfileController_getProfile
+      summary: Get profile
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResDto'
+        '401':
+          description: Login required to get profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionDto'
+      tags:
+        - Profile Module
+      security:
+        - api-key: []
+        - bearer: []
+    delete:
+      operationId: ProfileController_delete
+      summary: Delete profile
+      parameters:
+        - name: otp
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Profile deleted successfully
+        '401':
+          description: Login required to delete profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionDto'
+        '404':
+          description: User Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionDto'
+      tags:
+        - Profile Module
+      security:
+        - api-key: []
+        - bearer: []
+  /api/v1/profile/update-name:
+    put:
+      operationId: ProfileController_updateName
+      summary: Update Name
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NameUpdateReqDto'
+      responses:
+        '200':
+          description: Name updated successfully
+        '401':
+          description: login required to update name
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionDto'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionDto'
+        '422':
+          description: Unprocessable entity - validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionDto'
+      tags:
+        - Profile Module
+      security:
+        - api-key: []
+        - bearer: []
+  /api/v1/profile/update-email:
+    put:
+      operationId: ProfileController_updateEmail
+      summary: Update email
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailUpdateReqDto'
+      responses:
+        '200':
+          description: Email updated successfully
+        '401':
+          description: login required to update email
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionDto'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionDto'
+        '422':
+          description: Unprocessable entity - validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionDto'
+      tags:
+        - Profile Module
+      security:
+        - api-key: []
+        - bearer: []
+  /api/v1/profile/update-password:
+    put:
+      operationId: ProfileController_updatePassword
+      summary: Update password
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordUpdateReqDto'
+      responses:
+        '200':
+          description: Password updated successfully
+        '401':
+          description: login required to update password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionDto'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionDto'
+        '422':
+          description: Unprocessable entity - validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionDto'
+      tags:
+        - Profile Module
+      security:
+        - api-key: []
+        - bearer: []
+  /api/v1/profile/send-otp:
+    post:
+      operationId: ProfileController_sendOtp
+      summary: send otp
+      parameters: []
+      responses:
+        '200':
+          description: otp sent successfully
+        '401':
+          description: login required to update password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionDto'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionDto'
+      tags:
+        - Profile Module
+      security:
+        - api-key: []
+        - bearer: []
   /:
     get:
       operationId: AppController_getHello
@@ -878,15 +1066,17 @@ paths:
         '200':
           description: ''
 info:
-  title: DataMiner for production
+  title: DataMiner
   description: |-
     API Documentation     
      NOTE: The API with (LOCK) symbol can be used only after providing Login API response token in (Authorize)     
      -Parameter with * are required to execute related API
-  version: docker
+  version: backend-v1.1.1
   contact: {}
 tags: []
-servers: []
+servers:
+  - url: https://api.dataminer.site
+    description: The api gateway to communicate with servers
 components:
   securitySchemes:
     bearer:
@@ -1703,3 +1893,53 @@ components:
         - message
         - correlator_id
         - data
+    ProfileResDto:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+      required:
+        - id
+        - email
+        - first_name
+        - last_name
+    NameUpdateReqDto:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+      required:
+        - first_name
+        - last_name
+    EmailUpdateReqDto:
+      type: object
+      properties:
+        email:
+          type: string
+          maxLength: 255
+        otp:
+          type: string
+      required:
+        - email
+        - otp
+    PasswordUpdateReqDto:
+      type: object
+      properties:
+        old_password:
+          type: string
+        new_password:
+          type: string
+        otp:
+          type: string
+      required:
+        - old_password
+        - new_password
+        - otp
