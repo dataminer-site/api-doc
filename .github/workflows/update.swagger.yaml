@@ -10,6 +10,11 @@ jobs:
     environment: prod
     name: Deploy API documentation on Bump.sh
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      issues: write
 
     steps:
       - name: Checkout
