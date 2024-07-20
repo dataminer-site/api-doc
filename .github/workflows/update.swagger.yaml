@@ -2,6 +2,8 @@ name: Update swagger
 
 on:
     workflow_dispatch:
+    schedule:
+        - cron: "0 * * * *"
 
 jobs:
   deploy-doc:
@@ -18,4 +20,3 @@ jobs:
 
       - name: commit the doc
         uses: stefanzweifel/git-auto-commit-action@v5
-        
