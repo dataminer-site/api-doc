@@ -8,10 +8,14 @@ on:
     branches:
       - main
       - master
+    paths:
+      - 'doc/*.yaml'
   pull_request:
     branches:
       - main
       - master
+    paths:
+        - 'doc/*.yaml'
 jobs:
   deploy-doc:
     environment: prod
