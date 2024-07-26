@@ -125,6 +125,16 @@ paths:
               - desc
               - asc
             type: string
+        - name: key
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: value
+          required: false
+          in: query
+          schema:
+            type: string
       responses:
         '200':
           description: Success
@@ -491,6 +501,16 @@ paths:
               - desc
               - asc
             type: string
+        - name: key
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: value
+          required: false
+          in: query
+          schema:
+            type: string
       responses:
         '200':
           description: Success
@@ -647,6 +667,41 @@ paths:
                 $ref: '#/components/schemas/ExceptionDto'
       tags:
         - Request Dashboard Analytics
+      security:
+        - api-key: []
+        - bearer: []
+  /api/v1/request/sse/{id}:
+    get:
+      operationId: RequestSseController_findOne
+      summary: Get request by id
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID of the request
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestResponseDto'
+        '401':
+          description: Login required to get request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionDto'
+        '404':
+          description: Request Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionDto'
+      tags:
+        - User Request SSE Module
       security:
         - api-key: []
         - bearer: []
@@ -824,52 +879,118 @@ paths:
       security:
         - api-key: []
         - bearer: []
-  /api/v1/callback/{id}:
+  /api/v1/oauth/{provider}/login:
     get:
-      operationId: CallbackController_getSse
+      operationId: AuthController_githubAuth
+      summary: For login or signup
       parameters:
-        - name: id
+        - name: redirect_url
           required: true
-          in: path
+          in: query
           schema:
             type: string
-      responses:
-        '200':
-          description: ''
-      tags:
-        - Callback module
-  /api/v1/callback/{user_id}:
-    post:
-      operationId: CallbackController_store
-      summary: Add callback
-      parameters:
-        - name: user_id
+        - name: provider
           required: true
           in: path
-          description: ID of the user
+          description: Provider for auth
           schema:
+            enum:
+              - google
+              - facebook
+              - github
             type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CallbackReqDto'
       responses:
-        '201':
-          description: Callback successfully stored
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CallbackResponseDto'
         '422':
-          description: Unprocessable entity - validation errors
+          description: 'Unprocessable Entity or Validation Error : Provider missing'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ExceptionDto'
       tags:
-        - Callback module
+        - Social sign up module
+  /api/v1/oauth/{provider}/callback:
+    get:
+      operationId: AuthController_AuthCallback
+      parameters:
+        - name: code
+          required: true
+          in: query
+          description: code for auth
+          schema:
+            type: string
+        - name: state
+          required: true
+          in: query
+          description: state to verify auth user
+          schema:
+            type: string
+        - name: provider
+          required: true
+          in: path
+          description: Provider for auth
+          schema:
+            enum:
+              - google
+              - facebook
+              - github
+            type: string
+      responses:
+        '422':
+          description: >-
+            Unprocessable Entity or Validation Error : Missing provider Or code
+            Or state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionDto'
+      tags:
+        - Social sign up module
+  /api/v1/oauth/verify:
+    get:
+      operationId: AuthController_verifyToken
+      summary: For verify state
+      parameters:
+        - name: state
+          required: true
+          in: query
+          description: state to verify auth user
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLoginResponseDto'
+        '404':
+          description: 'Invalid state: User not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionDto'
+        '422':
+          description: 'Unprocessable Entity or Validation Error : Missing State'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionDto'
+      tags:
+        - Social sign up module
+  /api/v1/oauth/provider:
+    get:
+      operationId: AuthController_availableProviderList
+      summary: List of available provider
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderList'
+      tags:
+        - Social sign up module
   /api/v1/profile:
     get:
       operationId: ProfileController_getProfile
@@ -1071,7 +1192,7 @@ info:
     API Documentation     
      NOTE: The API with (LOCK) symbol can be used only after providing Login API response token in (Authorize)     
      -Parameter with * are required to execute related API
-  version: v1.2.1
+  version: v1.3.0
   contact: {}
 tags: []
 servers:
@@ -1504,9 +1625,9 @@ components:
           type: string
           nullable: true
           enum:
-            - TEST_PASSED
-            - TEST_FAILED
-          default: null
+            - in_progress
+            - failed
+            - success
       required:
         - id
         - location
@@ -1616,6 +1737,13 @@ components:
           type: string
         updated_at:
           type: string
+        status:
+          type: string
+          nullable: true
+          enum:
+            - in_progress
+            - failed
+            - success
       required:
         - id
         - location
@@ -1641,6 +1769,7 @@ components:
         - crawler_status
         - created_at
         - updated_at
+        - status
     RequestResponseDto:
       type: object
       properties:
@@ -1706,6 +1835,7 @@ components:
             - html
             - plugin
             - all
+          default: all
         mode:
           type: string
           description: behavior of crawler
@@ -1835,45 +1965,17 @@ components:
         description:
           type: string
           description: A detailed description for feedback
-    ConfDto:
+    ProviderResponse:
       type: object
       properties:
-        response_url:
+        name:
           type: string
-        response_headers:
-          type: string
-        title:
-          type: string
-        remote_address:
+        imageIcon:
           type: string
       required:
-        - response_url
-        - response_headers
-    CallbackReqDto:
-      type: object
-      properties:
-        request_id:
-          type: string
-        state:
-          type: string
-          description: >-
-            requester state with unique value to match the response with unique
-            id with will be returned to the callback without any change
-        content_html:
-          type: string
-        content_json:
-          type: string
-        conf:
-          $ref: '#/components/schemas/ConfDto'
-        status:
-          type: number
-        error:
-          type: string
-        plugin_output:
-          type: object
-      required:
-        - request_id
-    CallbackResponseDto:
+        - name
+        - imageIcon
+    ProviderList:
       type: object
       properties:
         is_error:
@@ -1883,7 +1985,9 @@ components:
         correlator_id:
           type: string
         data:
-          type: object
+          type: array
+          items:
+            $ref: '#/components/schemas/ProviderResponse'
       required:
         - is_error
         - message
